@@ -1,16 +1,30 @@
-import express from 'express';
-import { Server } from 'socket.io';
-const port = 3000;
+const express = require('express');
+const http = require('http');
+const socketIO = require('socket.io');
 
-const expressApp = express()
-const httpServer = expressApp.listen(port, () => {
-    console.table(
-        {
-            'Controller' : 'http://localhost:3000/controller',
-            'Display' : 'http://localhost:3000/ddisplay',
-        })
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
+
+app.use(express.static(__dirname + '/public'));
+
+io.on('connection', (socket) => {
+    console.log('Un cliente se ha conectado');
+
+    socket.on('enviar-elemento', (elemento) => {
+        io.emit('elemento-recibido', elemento);
+    })
+
+    socket.on('enviar-cursor', (elemento) => {
+        io.emit('cursor-recibido', elemento);
+    })
+
+    socket.on('disconnect', () => {
+        console.log('Un cliente se ha desconectado');
+    })
 })
 
-expressApp.use('/display', express.static('public-display'))
-expressApp.use('/controller', express.static('public-conotroller'))
-expressApp.use(express.json())
+server.listen(3000, () => {
+    console.log('Servidor escuchando en el puerto 3000');
+})
+
