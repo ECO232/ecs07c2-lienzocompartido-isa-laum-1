@@ -1,6 +1,7 @@
 const socket = io();
 
-let size = 20;
+
+let circlesize = 20;
 let identificador = 0;
 
 let elementos = [];
@@ -21,6 +22,11 @@ function setup() {
     const colorHex = event.target.value;
     const colorRGB = hexToRgb(colorHex);
     selectedColor = colorRGB;
+
+  const sizeInput = document.getElementById("circlesize");
+  sizeInput.addEventListener("input", (event) => {
+    circlesize = parseInt(event.target.value);
+});
   });
 
   changeColorButton.addEventListener("click", () => {
@@ -50,7 +56,7 @@ function mousePressed() {
     r: selectedColor.r,
     g: selectedColor.g,
     b: selectedColor.b,
-    size,
+    size: circlesize,
   };
   socket.emit("enviar-elemento", elemento);
 }
@@ -62,7 +68,7 @@ function mouseDragged() {
     r: selectedColor.r,
     g: selectedColor.g,
     b: selectedColor.b,
-    size,
+    size: circlesize,
     id: identificador,
   };
   socket.emit("enviar-cursor", elemento);
